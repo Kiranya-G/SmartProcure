@@ -1,0 +1,194 @@
+.admin-requests-page {
+    min-height: 100vh;
+    padding: 30px;
+    background: #f5f7fb;
+}
+
+.requests-header {
+    margin-bottom: 25px;
+}
+
+.requests-header h1 {
+    margin: 20px 0 8px;
+    color: #1f2937;
+}
+
+.requests-header p {
+    color: #6b7280;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.requests-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.requests-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.requests-table th,
+.requests-table td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.requests-table th {
+    background: #f8fafc;
+    color: #374151;
+}
+
+.request-status {
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.status.APPROVED {
+    color: #15803d;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+}
+
+.status.PENDING_FOR_APPROVAL {
+    color: #c2410c;
+    background: #ffedd5;
+    border: 1px solid #fdba74;
+}
+
+.status.REJECTED {
+    color: #b91c1c;
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+}
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* SUCCESS */
+.status-badge.SUCCESS {
+    color: #15803d;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+}
+
+/* APPROVED */
+.status-badge.APPROVED {
+    color: #166534;
+    background: #d1fae5;
+    border: 1px solid #6ee7b7;
+}
+
+/* PENDING */
+.status-badge.PENDING,
+.status-badge.PENDING_FOR_APPROVAL {
+    color: #c2410c;
+    background: #ffedd5;
+    border: 1px solid #fdba74;
+}
+
+/* REJECTED */
+.status-badge.REJECTED {
+    color: #b91c1c;
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+}
+
+/* PAID */
+.status-badge.PAID {
+    color: #15803d;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+}
+
+.payment-success-status {
+    display: inline-block;
+    color: #15803d;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.payment-pending-status {
+    display: inline-block;
+    color: #c2410c;
+    background: #ffedd5;
+    border: 1px solid #fdba74;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.make-payment-button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.make-payment-button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.approve-button {
+    background: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    cursor: pointer;
+}
+
+.approve-button:hover {
+    background: #16a34a;
+}
+
+
+.reject-button {
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    cursor: pointer;
+}
+
+.reject-button:hover {
+    background: #dc2626;
+}

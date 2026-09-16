@@ -1,0 +1,135 @@
+* {
+    box-sizing: border-box;
+}
+
+.admin-success-page {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(
+            135deg,
+            #f5f7ff,
+            #eef1ff
+    );
+
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+}
+
+.admin-success-card {
+    width: 450px;
+
+    padding: 45px 40px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    text-align: center;
+
+    box-shadow:
+            0 20px 50px rgba(50, 60, 120, 0.15);
+
+    animation: adminSuccessAppear 0.5s ease;
+}
+
+.admin-success-icon {
+    width: 80px;
+    height: 80px;
+
+    margin: 0 auto 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e7f8ee;
+
+    color: #22a55a;
+
+    font-size: 42px;
+    font-weight: 700;
+
+    border: 5px solid #c9efd9;
+}
+
+.admin-success-card h1 {
+    margin-bottom: 12px;
+
+    font-size: 28px;
+
+    color: #20243a;
+}
+
+.admin-success-card p {
+    margin: 8px 0;
+
+    color: #666b7a;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+}
+
+.admin-success-subtext {
+    margin-top: 5px !important;
+
+    font-size: 14px !important;
+
+    color: #858998 !important;
+}
+
+.admin-success-button {
+    width: 100%;
+
+    margin-top: 25px;
+
+    padding: 14px 20px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #4f46e5;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.admin-success-button:hover {
+    background: #4338ca;
+
+    transform: translateY(-1px);
+}
+
+.admin-success-loading {
+    margin-top: 18px;
+
+    font-size: 12px;
+
+    color: #999;
+}
+
+@keyframes adminSuccessAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

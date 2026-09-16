@@ -1,0 +1,504 @@
+/* =========================================
+   ADMIN REGISTRATION PAGE
+========================================= */
+
+.admin-page {
+    min-height: 100vh;
+    display: flex;
+
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+
+    background: #f5f6ff;
+}
+
+
+
+/* =========================================
+   RIGHT SECTION
+========================================= */
+
+.admin-right-section {
+    width: 47%;
+
+    min-height: 100vh;
+
+    flex-shrink: 0;
+
+    background: #ffffff;
+
+    padding: 45px 60px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+
+/* =========================================
+   REGISTER CARD
+========================================= */
+
+.admin-register-card {
+    width: 100%;
+
+    max-width: 560px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================
+   FORM HEADER
+========================================= */
+
+.admin-form-header {
+    margin-bottom: 27px;
+}
+
+
+.admin-welcome {
+    color: #6355e7;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+}
+
+
+.admin-form-header h1 {
+    margin: 9px 0 7px;
+
+    color: #29284e;
+
+    font-size: 29px;
+
+    font-weight: 750;
+}
+
+
+.admin-form-header p {
+    margin: 0;
+
+    color: #88889c;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================
+   INPUT GROUP
+========================================= */
+
+.admin-input-group {
+    margin-bottom: 17px;
+
+    flex: 1;
+}
+
+
+.admin-input-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #44445d;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.admin-input-wrapper {
+    height: 44px;
+
+    border: 1px solid #dedeea;
+
+    border-radius: 9px;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 12px;
+
+    box-sizing: border-box;
+
+    transition: 0.2s;
+}
+
+
+.admin-input-wrapper:focus-within {
+    border-color: #6355e7;
+
+    box-shadow:
+            0 0 0 3px rgba(99, 85, 231, 0.08);
+}
+
+
+.admin-input-wrapper > span {
+    margin-right: 9px;
+
+    font-size: 14px;
+}
+
+
+.admin-input-wrapper input {
+    width: 100%;
+
+    height: 100%;
+
+    border: none;
+
+    outline: none;
+
+    color: #29284e;
+
+    font-size: 12px;
+
+    background: transparent;
+}
+
+
+.admin-input-wrapper input::placeholder {
+    color: #aaa9bb;
+}
+
+
+/* =========================================
+   INPUT ROW
+========================================= */
+
+.admin-input-row {
+    display: flex;
+
+    gap: 14px;
+}
+
+
+/* =========================================
+   PASSWORD BUTTON
+========================================= */
+
+.admin-eye-button {
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    padding: 4px;
+}
+
+
+/* =========================================
+   TERMS
+========================================= */
+
+.admin-terms {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin: 5px 0 18px;
+}
+
+
+.admin-terms input {
+    accent-color: #6355e7;
+}
+
+
+.admin-terms label {
+    color: #88889c;
+
+    font-size: 10px;
+}
+
+
+.admin-terms span {
+    color: #6355e7;
+
+    font-weight: 700;
+}
+
+
+/* =========================================
+   REGISTER BUTTON
+========================================= */
+
+.admin-register-button {
+    width: 100%;
+
+    height: 46px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #6355e7;
+
+    color: white;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.admin-register-button:hover {
+    background: #5547d5;
+
+    box-shadow:
+            0 8px 20px rgba(99, 85, 231, 0.20);
+}
+
+
+.admin-register-button span {
+    margin-left: 8px;
+}
+
+
+/* =========================================
+   LOGIN LINK
+========================================= */
+
+.admin-login-link {
+    text-align: center;
+
+    margin-top: 20px;
+
+    color: #88889c;
+
+    font-size: 11px;
+}
+
+
+.admin-login-link button {
+    border: none;
+
+    background: transparent;
+
+    color: #6355e7;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    margin-left: 5px;
+}
+
+
+/* =========================================
+   COPYRIGHT
+========================================= */
+
+.admin-copyright {
+    text-align: center;
+
+    margin-top: 25px;
+
+    color: #aaa9bb;
+
+    font-size: 9px;
+}
+
+
+/* =========================================
+   FORM ERROR
+========================================= */
+
+.admin-form-error {
+    width: 100%;
+
+    margin: 12px 0;
+
+    padding: 11px 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    background: #fff1f1;
+
+    border: 1px solid #ffb8b8;
+
+    border-radius: 8px;
+
+    color: #d93025;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    box-sizing: border-box;
+}
+
+
+.admin-form-error span {
+    font-size: 16px;
+
+    font-weight: bold;
+}
+
+
+/* =========================================
+   RESPONSIVE - TABLET
+========================================= */
+
+@media (max-width: 1000px) {
+
+    .admin-left-section {
+        padding: 35px;
+    }
+
+    .admin-right-section {
+        padding: 35px;
+    }
+
+    .admin-project-title h1 {
+        font-size: 28px;
+    }
+
+    .admin-order-card {
+        left: 5%;
+    }
+
+    .admin-package-box {
+        right: 10%;
+    }
+}
+
+
+/* =========================================
+   RESPONSIVE - MOBILE
+========================================= */
+
+@media (max-width: 750px) {
+
+    .admin-page {
+        flex-direction: column;
+    }
+
+    .admin-left-section {
+        width: 100%;
+
+        min-height: auto;
+
+        padding: 30px;
+    }
+
+    .admin-right-section {
+        width: 100%;
+
+        min-height: auto;
+
+        padding: 35px 25px;
+    }
+
+    .admin-procurement-visual {
+        height: 210px;
+    }
+
+    .admin-project-title h1 {
+        font-size: 26px;
+    }
+}
+
+
+/* =========================================
+   RESPONSIVE - SMALL MOBILE
+========================================= */
+
+@media (max-width: 500px) {
+
+    .admin-input-row {
+        flex-direction: column;
+
+        gap: 0;
+    }
+
+    .admin-left-section {
+        padding: 25px 20px;
+    }
+
+    .admin-right-section {
+        padding: 30px 20px;
+    }
+
+    .admin-order-card {
+        left: 0;
+
+        width: 200px;
+    }
+
+    .admin-package-box {
+        right: 0;
+    }
+
+    .admin-truck-card {
+        right: 0;
+    }
+}
+
+/* =========================================
+   ADMIN ICON COLORS
+   ========================================= */
+
+/* Form icons */
+.admin-icon-input {
+    color: #475569;
+}
+
+/* Purchase order */
+.admin-icon-document {
+    color: #2563eb;
+}
+
+/* Package */
+.admin-icon-package {
+    color: #7c3aed;
+}
+
+/* Delivery truck */
+.admin-icon-truck {
+    color: #0891b2;
+}
+
+/* Processing status */
+.admin-icon-status {
+    color: #16a34a;
+}
+
+/* Footer status */
+.admin-icon-footer {
+    color: #16a34a;
+}
+
+/* Password eye */
+.admin-icon-eye {
+    color: #64748b;
+}
+
+/* Error */
+.admin-icon-error {
+    color: #dc2626;
+}

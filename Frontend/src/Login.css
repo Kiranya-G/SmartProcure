@@ -1,0 +1,245 @@
+* {
+    box-sizing: border-box;
+}
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f6ff;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+}
+
+.login-box {
+    width: 420px;
+    padding: 40px;
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.login-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eef0ff;
+    border-radius: 50%;
+
+    font-size: 28px;
+}
+
+.login-box h1 {
+    text-align: center;
+    margin: 0;
+    font-size: 30px;
+    color: #20233a;
+}
+
+.login-subtitle {
+    text-align: center;
+    color: #777;
+    margin: 10px 0 30px;
+}
+
+.login-input-group {
+    margin-bottom: 20px;
+}
+
+.login-input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.login-input-group input {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #d9dbe7;
+    border-radius: 9px;
+    outline: none;
+    font-size: 15px;
+}
+
+.login-input-group input:focus {
+    border-color: #6366f1;
+}
+
+.login-password-wrapper {
+    position: relative;
+}
+
+.login-password-wrapper input {
+    padding-right: 50px;
+}
+
+.login-eye-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    font-size: 18px;
+}
+
+/* =========================
+   ERROR MESSAGE
+========================= */
+
+.login-error {
+    width: 100%;
+    margin: 5px 0 18px;
+    padding: 11px 14px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    background: #fff1f1;
+    border: 1px solid #ffb8b8;
+    border-radius: 8px;
+
+    color: #d93025;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.login-error span:first-child {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* =========================
+   LOGIN BUTTON
+========================= */
+
+.login-button {
+    width: 100%;
+    padding: 14px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #6366f1;
+    color: white;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.login-button:hover {
+    background: #4f46e5;
+}
+
+.login-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* =========================
+   REGISTER LINK
+========================= */
+
+.register-link {
+    margin-top: 25px;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+}
+
+.register-link button {
+    border: none;
+    background: none;
+
+    color: #6366f1;
+    font-weight: 600;
+
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.register-link button:hover {
+    text-decoration: underline;
+}
+
+/* ================================
+   USER / ADMIN ROLE BUTTONS
+================================ */
+
+.login-role-buttons {
+    display: flex;
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.role-button {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 9px;
+    background: #fff;
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.role-button:hover {
+    border-color: #c62828;
+}
+
+.role-button.active {
+    background: #c62828;
+    border-color: #c62828;
+    color: white;
+}
+
+
+/* ================================
+   LOGIN TYPE TITLE
+================================ */
+
+.login-type-title {
+    text-align: center;
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: #c62828;
+    margin: 5px 0 25px;
+}
+
+
+/* ================================
+   FOOTER
+================================ */
+
+.login-footer {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+}
+
+.login-footer button {
+    border: none;
+    background: transparent;
+    color: #c62828;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.login-footer button:hover {
+    text-decoration: underline;
+}
