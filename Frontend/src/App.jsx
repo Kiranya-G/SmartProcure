@@ -14,6 +14,7 @@ import AdminPaymentHistory from './AdminPaymentHistory'
 
 import SupplierDashboard from './SupplierDashboard'
 import SupplierLogin from './SupplierLogin'
+import MyRequests from './MyRequests'
 import {
   User,
   Mail,
@@ -553,11 +554,12 @@ function UserRegisterForm() {
 function RegisterPage() {
 
   const [role, setRole] = useState('admin')
-
+  const navigate = useNavigate()
   return (
       <div className="registration-page-wrapper">
 
         {/* USER / ADMIN SWITCH */}
+        {/* USER / ADMIN / SUPPLIER SWITCH */}
         <div className="role-switcher">
 
           <button
@@ -567,15 +569,14 @@ function RegisterPage() {
               }`}
               onClick={() => setRole('user')}
           >
-
             <User
                 size={18}
                 className="icon-role-user"
             />
 
             <span>USER</span>
-
           </button>
+
 
           <button
               type="button"
@@ -584,14 +585,27 @@ function RegisterPage() {
               }`}
               onClick={() => setRole('admin')}
           >
-
             <ShieldCheck
                 size={18}
                 className="icon-role-admin"
             />
 
             <span>ADMIN</span>
+          </button>
 
+
+          {/* SUPPLIER */}
+          <button
+              type="button"
+              className="role-button"
+              onClick={() => navigate('/supplier-login')}
+          >
+            <Truck
+                size={18}
+                className="icon-role-supplier"
+            />
+
+            <span>SUPPLIER</span>
           </button>
 
         </div>
@@ -659,6 +673,10 @@ function App() {
               path="/supplier-login"
               element={<SupplierLogin />}
           />
+
+          <Route path="/my-requests"
+                 element={<MyRequests />}
+          />
           <Route
               path="/raise-request"
               element={<RaiseRequest />}
@@ -701,6 +719,10 @@ function App() {
             element={<UserProfile />}
             />
 
+          <Route
+              path="/my-requests"
+              element={<MyRequests />}
+          />
 
         </Routes>
 

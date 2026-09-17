@@ -234,6 +234,39 @@ function UserDashboard() {
 
                     </button>
 
+                    {/* MY REQUESTS */}
+
+                    <button
+                        className="nav-item"
+                        onClick={() =>
+                            navigate('/my-requests')
+                        }
+                    >
+
+                        <ClipboardList size={20} />
+
+                        <span>
+        My Requests
+    </span>
+
+                    </button>
+
+                    {/* REQUEST TRACKING */}
+
+                    <button
+                        className="nav-item"
+                        onClick={() =>
+                            setShowTrackingModal(true)
+                        }
+                    >
+
+                        <Truck size={20} />
+
+                        <span>
+                            Request Tracking
+                        </span>
+
+                    </button>
 
                     {/* DOWNLOAD EXCEL */}
 
@@ -479,30 +512,7 @@ function UserDashboard() {
 
                     {/* RAISE REQUEST */}
 
-                    <div
-                        className="info-card"
-                        onClick={() => setShowTrackingModal(true)}
-                        style={{ cursor: 'pointer' }}
-                    >
 
-                        <div className="info-card-icon">
-                            <Truck size={21} />
-                        </div>
-
-                        <div>
-
-                            <h3>
-                                Request Tracking
-                            </h3>
-
-                            <p>
-                                Track request and delivery
-                                status in one place.
-                            </p>
-
-                        </div>
-
-                    </div>
 
 
 
