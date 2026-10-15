@@ -20,10 +20,27 @@ function AdminRequests() {
     // FETCH DATA
     // --------------------------------------------------
 
+
+
     useEffect(() => {
         fetchRequests()
         fetchPayments()
+
+        const refreshPayments = () => {
+            fetchPayments()
+        }
+
+        const intervalId = window.setInterval(
+            refreshPayments,
+            5000
+        )
+
+        return () => {
+            window.clearInterval(intervalId)
+        }
     }, [])
+
+
 
     // --------------------------------------------------
     // FETCH REQUESTS
@@ -83,10 +100,9 @@ function AdminRequests() {
     // FETCH PAYMENTS
     // --------------------------------------------------
 
+
     const fetchPayments = async () => {
-
         try {
-
             const response = await fetch(
                 'http://localhost:8080/api/payments'
             )
@@ -97,22 +113,64 @@ function AdminRequests() {
 
             const data = await response.json()
 
-            console.log(
-                'PAYMENT DATA:',
-                data
-            )
+            console.log('ALL PAYMENT DATA:', data)
 
-            setPayments(data)
+            setPayments(Array.isArray(data) ? data : [])
 
         } catch (error) {
-
-            console.error(
-                'PAYMENT FETCH ERROR:',
-                error
-            )
-
+            console.error('PAYMENT FETCH ERROR:', error)
         }
     }
+
+
+    const handleMakePayment = async (request) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/quotations/request/${request.productId}`
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch supplier quotations');
+            }
+
+            const quotations = await response.json();
+
+            const selectedQuotation = quotations.find(
+                quotation =>
+                    String(quotation.quotationStatus).toUpperCase() === 'SELECTED'
+            );
+
+            if (!selectedQuotation) {
+                alert('Please select a supplier quotation before payment.');
+                return;
+            }
+
+            if (
+                Number(selectedQuotation.availableQuantity) <
+                Number(request.numberOfQuantities)
+            ) {
+                alert('Selected supplier does not have enough stock.');
+                return;
+            }
+
+            const totalAmount =
+                Number(selectedQuotation.quotedAmount) *
+                Number(request.numberOfQuantities);
+
+            navigate('/admin-payment', {
+                state: {
+                    productId: request.productId,
+                    productName: request.name,
+                    amount: totalAmount,
+                    supplierId: selectedQuotation.supplierId
+                }
+            });
+
+        } catch (error) {
+            console.error('PAYMENT NAVIGATION ERROR:', error);
+            alert(error.message || 'Unable to load selected supplier quotation.');
+        }
+    };
 
     // --------------------------------------------------
     // APPROVE / REJECT REQUEST
@@ -398,27 +456,22 @@ function AdminRequests() {
 
                                             {/* PAYMENT STATUS */}
 
+
                                             <td>
-
                                                 {payment &&
-                                                String(
-                                                    payment.paymentStatus || ''
-                                                ).toUpperCase() ===
-                                                'SUCCESS' ? (
-
+                                                ['SUCCESS', 'PAID'].includes(
+                                                    String(payment.paymentStatus || '').toUpperCase()
+                                                ) ? (
                                                     <span className="payment-success-status">
-                                                            SUCCESS
-                                                        </span>
-
+            PAID
+        </span>
                                                 ) : (
-
                                                     <span className="payment-pending-status">
-                                                            NOT PAID
-                                                        </span>
-
+            NOT PAID
+        </span>
                                                 )}
-
                                             </td>
+
 
 
                                             {/* ACTION */}
@@ -469,26 +522,7 @@ function AdminRequests() {
 
                                                         <button
                                                             className="make-payment-button"
-                                                            onClick={() =>
-                                                                navigate(
-                                                                    '/admin-payment',
-                                                                    {
-                                                                        state: {
-                                                                            productId:
-                                                                            request.productId,
-
-                                                                            productName:
-                                                                            request.name,
-
-                                                                            amount:
-                                                                            request.totalPrice,
-
-                                                                            supplierId:
-                                                                            request.supplier?.supId
-                                                                        }
-                                                                    }
-                                                                )
-                                                            }
+                                                            onClick={() => handleMakePayment(request)}
                                                         >
                                                             Make Payment
                                                         </button>

@@ -50,4 +50,17 @@ public class AccountDetailsController {
 
         return ResponseEntity.ok(accountDetails);
     }
+
+
+
+    @PutMapping("/{adminId}/reset-pin")
+    public ResponseEntity<String> resetPin(
+            @PathVariable Long adminId,
+            @RequestParam String newPin) {
+
+        accountDetailsService.resetPin(adminId, newPin);
+
+        return ResponseEntity.ok("PIN reset successfully");
+    }
+
 }

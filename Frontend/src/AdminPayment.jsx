@@ -82,10 +82,12 @@ function AdminPayment() {
                 }
             )
 
+
             const responseText = await response.text()
 
             if (!response.ok) {
-                setPinError('Please enter the correct PIN')
+                console.log('Payment error:', responseText)
+                setPinError(responseText || 'Payment failed')
                 return
             }
 
@@ -93,6 +95,9 @@ function AdminPayment() {
 
             setTransactionId(payment.transactionId)
             setPaymentSuccess(true)
+
+
+
 
         } catch (error) {
 
@@ -139,12 +144,14 @@ function AdminPayment() {
 
                     </div>
 
+
                     <button
                         className="back-button"
-                        onClick={() => navigate('/admin-dashboard')}
+                        onClick={() => navigate('/admin-requests')}
                     >
-                        Back to Dashboard
+                        Back to Requests
                     </button>
+
 
                 </div>
 

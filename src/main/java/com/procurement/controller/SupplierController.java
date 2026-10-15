@@ -3,6 +3,7 @@ package com.procurement.controller;
 import com.procurement.dto.SupplierRequestDTO;
 import com.procurement.entity.Supplier;
 import com.procurement.service.SupplierService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +25,12 @@ public class SupplierController {
 
     @PostMapping
     public ResponseEntity<Supplier> createSupplier(
-            @RequestBody SupplierRequestDTO request) {
+            @Valid @RequestBody SupplierRequestDTO request) {
 
         Supplier supplier = supplierService.createSupplier(request);
 
         return new ResponseEntity<>(supplier, HttpStatus.CREATED);
+
     }
 
     @GetMapping
@@ -36,6 +38,16 @@ public class SupplierController {
 
         return ResponseEntity.ok(
                 supplierService.getAllSuppliers()
+        );
+    }
+
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<Supplier>> getActiveSuppliersByCategory(
+            @PathVariable Long categoryId) {
+
+        return ResponseEntity.ok(
+                supplierService.getActiveSuppliersByCategory(categoryId)
         );
     }
 

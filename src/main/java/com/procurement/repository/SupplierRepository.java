@@ -1,3 +1,4 @@
+
 package com.procurement.repository;
 
 import com.procurement.entity.Supplier;
@@ -13,4 +14,8 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     Optional<Supplier> findByEmail(String email);
 
     List<Supplier> findAllByEmail(String email);
+
+    // Find all suppliers belonging to a particular category
+    List<Supplier> findByCategory_CatId(Long categoryId);
+
 }

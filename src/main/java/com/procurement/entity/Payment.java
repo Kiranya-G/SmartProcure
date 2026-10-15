@@ -2,7 +2,7 @@ package com.procurement.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,6 +18,7 @@ public class Payment {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne
     @JoinColumn(name = "supplier_id", nullable = true)
     private Supplier supplier;

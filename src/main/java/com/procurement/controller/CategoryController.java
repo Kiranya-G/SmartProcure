@@ -51,15 +51,7 @@ public class CategoryController {
         );
     }
 
-    // Get Categories by Department ID
-    @GetMapping("/department/{departmentId}")
-    public ResponseEntity<List<Category>> getCategoriesByDepartmentId(
-            @PathVariable Long departmentId) {
 
-        return ResponseEntity.ok(
-                categoryService.getCategoriesByDepartmentId(departmentId)
-        );
-    }
 
     // Update Category
     @PutMapping("/{catId}")

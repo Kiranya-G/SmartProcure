@@ -14,6 +14,8 @@ import AdminPaymentHistory from './AdminPaymentHistory'
 
 import SupplierDashboard from './SupplierDashboard'
 import SupplierLogin from './SupplierLogin'
+import SupplierRegistration from './SupplierRegistration'
+
 import MyRequests from './MyRequests'
 import {
   User,
@@ -598,7 +600,7 @@ function RegisterPage() {
           <button
               type="button"
               className="role-button"
-              onClick={() => navigate('/supplier-login')}
+              onClick={() => navigate('/supplier-registration')}
           >
             <Truck
                 size={18}
@@ -673,6 +675,12 @@ function App() {
               path="/supplier-login"
               element={<SupplierLogin />}
           />
+
+          <Route
+              path="/supplier-registration"
+              element={<SupplierRegistration />}
+          />
+
 
           <Route path="/my-requests"
                  element={<MyRequests />}

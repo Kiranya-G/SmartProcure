@@ -44,6 +44,10 @@ function AdminDashboard() {
 
     const [payments, setPayments] = useState([])
 
+    const [quotations, setQuotations] = useState([])
+    const [quotationLoading, setQuotationLoading] = useState(false)
+    const [quotationError, setQuotationError] = useState('')
+    const [selectedRequestId, setSelectedRequestId] = useState(null)
     const [loading, setLoading] = useState(true)
 
     const [error, setError] = useState('')
@@ -328,6 +332,68 @@ function AdminDashboard() {
         }
 
     }
+
+    const fetchQuotations = async (productId) => {
+        try {
+            setQuotationLoading(true)
+            setQuotationError('')
+            setSelectedRequestId(productId)
+
+            const response = await fetch(
+                `http://localhost:8080/api/quotations/request/${productId}`
+            )
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch quotations')
+            }
+
+            const data = await response.json()
+            setQuotations(data)
+        } catch (err) {
+            console.error('FETCH QUOTATIONS ERROR:', err)
+            setQuotations([])
+            setQuotationError('Unable to load quotations.')
+        } finally {
+            setQuotationLoading(false)
+        }
+    }
+
+
+    const handleSelectSupplier = async (quotationId) => {
+        const confirmed = window.confirm(
+            'Are you sure you want to select this supplier?'
+        );
+
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/quotations/${quotationId}/select`,
+                {
+                    method: 'PUT'
+                }
+            );
+
+            const message = await response.text();
+
+            if (!response.ok) {
+                throw new Error(message || 'Failed to select supplier');
+            }
+
+            alert('Supplier selected successfully!');
+
+            // Refresh quotations for the same request
+            if (selectedRequestId !== null) {
+                await fetchQuotations(selectedRequestId);
+            }
+        } catch (err) {
+            console.error('SELECT SUPPLIER ERROR:', err);
+            alert(err.message || 'Unable to select supplier.');
+        }
+    };
+
+
+
 
 
     // =========================================================
@@ -807,6 +873,167 @@ function AdminDashboard() {
 
                     </section>
 
+
+
+
+                    {/* QUOTATION COMPARISON SECTION */}
+                    <section className="payment-overview quotation-overview">
+                        <div className="payment-overview-header">
+                            <div className="payment-title">
+                                <div className="payment-title-icon">
+                                    <FileText size={21} />
+                                </div>
+
+                                <div>
+                                    <h2>Supplier Quotations</h2>
+                                    <p>
+                                        View and compare quotations for approved requests.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{
+                                width: '100%',
+                                borderCollapse: 'collapse',
+                                marginTop: '20px'
+                            }}>
+                                <thead>
+                                <tr>
+                                    <th style={{ padding: '12px', textAlign: 'left' }}>Request ID</th>
+                                    <th style={{ padding: '12px', textAlign: 'left' }}>Product</th>
+                                    <th style={{ padding: '12px', textAlign: 'left' }}>Request Status</th>
+                                    <th style={{ padding: '12px', textAlign: 'left' }}>Action</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                {departmentRequests
+                                    .filter(request => request.status === 'APPROVED')
+                                    .map(request => (
+                                        <tr key={request.productId}>
+                                            <td style={{ padding: '12px' }}>
+                                                {request.productId}
+                                            </td>
+
+                                            <td style={{ padding: '12px' }}>
+                                                {request.name}
+                                            </td>
+
+                                            <td style={{ padding: '12px' }}>
+                                                {request.status}
+                                            </td>
+
+                                            <td style={{ padding: '12px' }}>
+                                                <button
+                                                    className="payment-history-button"
+                                                    onClick={() =>
+                                                        fetchQuotations(request.productId)
+                                                    }
+                                                >
+                                                    View Quotations
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {quotationLoading && (
+                            <p>Loading quotations...</p>
+                        )}
+
+                        {quotationError && (
+                            <p style={{ color: 'red' }}>{quotationError}</p>
+                        )}
+
+                        {!quotationLoading &&
+                            !quotationError &&
+                            selectedRequestId !== null && (
+                                <div style={{ marginTop: '24px', overflowX: 'auto' }}>
+                                    <h3>
+                                        Quotations for Request #{selectedRequestId}
+                                    </h3>
+
+                                    {quotations.length === 0 ? (
+                                        <p>No quotations submitted for this request yet.</p>
+                                    ) : (
+                                        <table style={{
+                                            width: '100%',
+                                            borderCollapse: 'collapse'
+                                        }}>
+                                            <thead>
+                                            <tr>
+                                                <th style={{ padding: '12px', textAlign: 'left' }}>Supplier</th>
+                                                <th style={{ padding: '12px', textAlign: 'left' }}>Quoted Price</th>
+                                                <th style={{ padding: '12px', textAlign: 'left' }}>Quantity</th>
+                                                <th style={{ padding: '12px', textAlign: 'left' }}>Delivery Date</th>
+                                                <th style={{ padding: '12px', textAlign: 'left' }}>Message</th>
+                                                <th style={{ padding: '12px', textAlign: 'left' }}>Status</th>
+                                                <th style={{ padding: '12px', textAlign: 'left' }}>Action</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tbody>
+                                            {quotations.map(quotation => (
+                                                <tr key={quotation.quotationId}>
+                                                    <td style={{ padding: '12px' }}>
+                                                        {quotation.supplierName}
+                                                    </td>
+
+                                                    <td style={{ padding: '12px' }}>
+                                                        ₹{Number(
+                                                        quotation.quotedAmount || 0
+                                                    ).toLocaleString('en-IN')}
+                                                    </td>
+
+                                                    <td style={{ padding: '12px' }}>
+                                                        {quotation.availableQuantity}
+                                                    </td>
+
+                                                    <td style={{ padding: '12px' }}>
+                                                        {quotation.expectedDeliveryDate || '-'}
+                                                    </td>
+
+                                                    <td style={{ padding: '12px' }}>
+                                                        {quotation.supplierMessage || '-'}
+                                                    </td>
+
+                                                    <td style={{ padding: '12px' }}>
+                                                        {quotation.quotationStatus}
+                                                    </td>
+
+                                                    <td style={{ padding: '12px' }}>
+                                                        {quotation.quotationStatus === 'PENDING' ? (
+                                                            <button
+                                                                className="payment-history-button"
+                                                                onClick={() =>
+                                                                    handleSelectSupplier(quotation.quotationId)
+                                                                }
+                                                                disabled={quotationLoading}
+                                                            >
+                                                                Select Supplier
+                                                            </button>
+                                                        ) : quotation.quotationStatus === 'SELECTED' ? (
+                                                            <span style={{ color: 'green', fontWeight: 'bold' }}>
+            Supplier Selected
+        </span>
+                                                        ) : (
+                                                            <span style={{ color: 'gray' }}>
+            Not Selected
+        </span>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
+                                    )}
+                                </div>
+                            )}
+                    </section>
 
                     {/* =================================================
                         PAYMENT SECTION

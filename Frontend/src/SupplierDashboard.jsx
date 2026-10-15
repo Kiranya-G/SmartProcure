@@ -11,7 +11,8 @@ import {
     Truck,
     CheckCircle,
 
-    Clock
+    Clock,
+    FileText
 } from 'lucide-react'
 import { useNavigate,useLocation } from 'react-router-dom'
 import './SupplierDashboard.css'
@@ -34,8 +35,20 @@ function SupplierDashboard() {
     const [ratings, setRatings] = useState([])
 
     const [activeView, setActiveView] = useState('dashboard')
+    const [approvedRequests, setApprovedRequests] = useState([])
+
+
+    const [selectedQuotations, setSelectedQuotations] = useState([])
     const [shipmentFilter, setShipmentFilter] = useState('ALL')
 
+
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [quotedAmount, setQuotedAmount] = useState('');
+    const [availableQuantity, setAvailableQuantity] = useState('');
+    const [expectedDeliveryDate, setExpectedDeliveryDate] = useState('');
+    const [supplierMessage, setSupplierMessage] = useState('');
+    const [quotationMessage, setQuotationMessage] = useState('');
+    const [quotationLoading, setQuotationLoading] = useState(false);
 
 
 
@@ -46,7 +59,8 @@ function SupplierDashboard() {
     const supplierEmail =
         localStorage.getItem('supplierEmail') || ''
 
-    const supplierId = '11'
+    const supplierId =
+        localStorage.getItem('supplierId')
 
     // =========================================================
     // FETCH PAYMENTS + SHIPMENTS
@@ -68,6 +82,30 @@ function SupplierDashboard() {
                 }
 
 
+
+                const fetchApprovedRequests = async () => {
+                    try {
+                        const response = await fetch(
+                            `http://localhost:8080/api/products/supplier/${supplierId}/approved-requests`
+                        );
+
+                        if (!response.ok) {
+                            throw new Error(
+                                `Failed to fetch approved requests: ${response.status}`
+                            );
+                        }
+
+                        const data = await response.json();
+                        setApprovedRequests(data);
+                    } catch (err) {
+                        console.error('Error fetching approved requests:', err);
+                    }
+                };
+
+                fetchApprovedRequests();
+
+
+                fetchSelectedQuotations();
                 // =================================================
                 // FETCH PAYMENTS
                 // =================================================
@@ -691,6 +729,169 @@ function SupplierDashboard() {
     // RENDER
     // =========================================================
 
+
+
+
+
+    const fetchSelectedQuotations = async () => {
+        const currentSupplierId = localStorage.getItem('supplierId');
+
+        if (!currentSupplierId) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/quotations/supplier/${currentSupplierId}`
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch supplier quotations');
+            }
+
+            const data = await response.json();
+
+            const selected = data.filter(
+                quotation =>
+                    quotation.quotationStatus?.toUpperCase() === 'SELECTED'
+            );
+
+            setSelectedQuotations(selected);
+        } catch (error) {
+            console.error('SELECTED QUOTATIONS ERROR:', error);
+        }
+    };
+
+
+    const handleSubmitQuotation = async () => {
+        if (!selectedRequest) {
+            setQuotationMessage('Please select a request.');
+            return;
+        }
+
+        const currentSupplierId = localStorage.getItem('supplierId');
+
+        if (!currentSupplierId) {
+            setQuotationMessage('Supplier ID not found. Please login again.');
+            return;
+        }
+
+        const quantity = Number(availableQuantity);
+        const price = Number(quotedAmount);
+
+        if (
+            quotedAmount.trim() === '' ||
+            !Number.isFinite(price) ||
+            price <= 0
+        ) {
+            setQuotationMessage('Enter a valid quoted price.');
+            return;
+        }
+
+        if (
+            availableQuantity.trim() === '' ||
+            !Number.isInteger(quantity) ||
+            quantity < selectedRequest.numberOfQuantities
+        ) {
+            setQuotationMessage(
+                'Available quantity must be at least the requested quantity.'
+            );
+            return;
+        }
+
+        const today = new Date();
+        const localToday = [
+            today.getFullYear(),
+            String(today.getMonth() + 1).padStart(2, '0'),
+            String(today.getDate()).padStart(2, '0')
+        ].join('-');
+
+        if (
+            !expectedDeliveryDate ||
+            expectedDeliveryDate < localToday
+        ) {
+            setQuotationMessage(
+                'Please select today or a future delivery date.'
+            );
+            return;
+        }
+
+        setQuotationLoading(true);
+        setQuotationMessage('');
+
+        try {
+            const response = await fetch(
+                'http://localhost:8080/api/quotations/submit',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId: selectedRequest.productId,
+                        supplierId: Number(currentSupplierId),
+                        quotedAmount: price,
+                        availableQuantity: quantity,
+                        expectedDeliveryDate: expectedDeliveryDate,
+                        supplierMessage: supplierMessage.trim()
+                    })
+                }
+            );
+
+            const responseText = await response.text();
+
+            let result = null;
+
+            try {
+                result = responseText ? JSON.parse(responseText) : null;
+            } catch {
+                result = null;
+            }
+
+
+            if (!response.ok) {
+                const errorMessage =
+                    result?.message ||
+                    result?.error ||
+                    responseText ||
+                    '';
+
+                if (
+                    response.status === 500 &&
+                    errorMessage.toLowerCase().includes('already submitted')
+                ) {
+                    setQuotationMessage(
+                        'You have already submitted a quotation for this request.'
+                    );
+                    setSelectedRequest(null);
+                    return;
+                }
+
+                throw new Error(
+                    errorMessage || `Request failed with status ${response.status}`
+                );
+            }
+
+
+            setQuotationMessage('Quotation submitted successfully!');
+
+            await fetchSelectedQuotations();
+            setSelectedRequest(null);
+            setQuotedAmount('');
+            setAvailableQuantity('');
+            setExpectedDeliveryDate('');
+            setSupplierMessage('');
+
+        } catch (err) {
+            console.error('QUOTATION SUBMISSION ERROR:', err);
+
+            setQuotationMessage(
+                err.message || 'Unable to submit quotation.'
+            );
+        } finally {
+            setQuotationLoading(false);
+        }
+    };
     return (
 
         <div className="supplier-dashboard">
@@ -785,6 +986,21 @@ function SupplierDashboard() {
 
                     </button>
 
+                    <button
+                        className={`supplier-nav-item ${
+                            activeView === 'quotations' ? 'active' : ''
+                        }`}
+                        onClick={() => {
+                            setActiveView('quotations')
+                            setShipmentFilter('ALL')
+                        }}
+                    >
+                        <FileText size={20} />
+
+                        {sidebarOpen && (
+                            <span>Requests & Quotations</span>
+                        )}
+                    </button>
 
                     {/* PAYMENTS */}
 
@@ -963,6 +1179,405 @@ function SupplierDashboard() {
                 </section>
                 )}
 
+
+                {/* REQUESTS & QUOTATIONS */}
+                {activeView === 'quotations' && (
+                    <section className="supplier-content quotation-page">
+
+                        <div className="quotation-page-header">
+                            <div>
+                <span className="quotation-eyebrow">
+                    SUPPLIER WORKSPACE
+                </span>
+                                <h2>Requests &amp; Quotations</h2>
+                                <p>
+                                    Review approved requests and submit your quotation
+                                    to the admin.
+                                </p>
+                            </div>
+
+                            <div className="quotation-count">
+                                <FileText size={22} />
+                                <div>
+                                    <strong>{approvedRequests.length}</strong>
+                                    <span>Approved Requests</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* SUCCESS / ERROR MESSAGE */}
+                        {quotationMessage && (
+                            <div
+                                className={`quotation-alert ${
+                                    quotationMessage.toLowerCase().includes('success')
+                                        ? 'success'
+                                        : 'error'
+                                }`}
+                                role="status"
+                            >
+                                {quotationMessage}
+                            </div>
+                        )}
+
+                        {/* APPROVED REQUESTS */}
+                        <div className="quotation-section">
+                            <div className="quotation-section-heading">
+                                <div>
+                                    <h3>Approved Requests</h3>
+                                    <p>Submit a quotation for each eligible request.</p>
+                                </div>
+                                <span className="quotation-total">
+                    {approvedRequests.length} requests
+                </span>
+                            </div>
+
+                            {approvedRequests.length === 0 ? (
+                                <div className="quotation-empty">
+                                    <Package size={34} />
+                                    <h3>No approved requests available</h3>
+                                    <p>
+                                        Approved requests for your supplier account
+                                        will appear here.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="quotation-table-wrapper">
+                                    <div className="quotation-table quotation-table-header">
+                                        <span>Request / Product</span>
+                                        <span>Category</span>
+                                        <span>Quantity</span>
+                                        <span>Requested Price</span>
+                                        <span>Status</span>
+                                        <span>Action</span>
+                                    </div>
+
+                                    {approvedRequests.map((request) => (
+                                        <div
+                                            className="quotation-table quotation-request-row"
+                                            key={request.productId}
+                                        >
+                                            <div className="quotation-product-cell">
+                                                <div className="quotation-product-icon">
+                                                    <Package size={20} />
+                                                </div>
+                                                <div>
+                                                    <strong>
+                                                        {request.name || 'Product'}
+                                                    </strong>
+                                                    <small>
+                                                        Request #{request.productId}
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <div className="quotation-cell">
+                                                {request.category?.catName || 'N/A'}
+                                            </div>
+
+                                            <div className="quotation-cell">
+                                                {request.numberOfQuantities ?? 'N/A'}
+                                            </div>
+
+                                            <div className="quotation-cell quotation-price">
+                                                ₹
+                                                {Number(
+                                                    request.pricePerProduct || 0
+                                                ).toLocaleString('en-IN')}
+                                            </div>
+
+                                            <div>
+                                <span className="quotation-status approved-status">
+                                    <CheckCircle size={14} />
+                                    Approved
+                                </span>
+                                            </div>
+
+                                            <div>
+                                                <button
+                                                    type="button"
+                                                    className="quotation-submit-btn"
+                                                    onClick={() => {
+                                                        setSelectedRequest(request);
+                                                        setQuotedAmount('');
+                                                        setAvailableQuantity(
+                                                            String(
+                                                                request.numberOfQuantities || ''
+                                                            )
+                                                        );
+                                                        setExpectedDeliveryDate('');
+                                                        setSupplierMessage('');
+                                                        setQuotationMessage('');
+                                                    }}
+                                                >
+                                                    Submit Quotation
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ADMIN SELECTED QUOTATIONS */}
+                        <div className="quotation-section selected-quotation-section">
+                            <div className="quotation-section-heading">
+                                <div>
+                                    <h3>Admin Selected Quotations</h3>
+                                    <p>
+                                        Quotations selected by the admin are displayed here.
+                                    </p>
+                                </div>
+
+                                <span className="quotation-total selected-total">
+                    {selectedQuotations.length} selected
+                </span>
+                            </div>
+
+                            {selectedQuotations.length === 0 ? (
+                                <div className="quotation-empty compact-empty">
+                                    <Clock size={30} />
+                                    <h3>No selected quotations yet</h3>
+                                    <p>
+                                        Your quotation will appear here after the admin
+                                        selects it.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="quotation-table-wrapper">
+                                    <div className="quotation-table selected-table-header">
+                                        <span>Product</span>
+                                        <span>Quotation ID</span>
+                                        <span>Quoted Price</span>
+                                        <span>Available Qty.</span>
+                                        <span>Delivery Date</span>
+                                        <span>Status</span>
+                                    </div>
+
+                                    {selectedQuotations.map((quotation) => (
+                                        <div
+                                            className="quotation-table quotation-request-row selected-quotation-row"
+                                            key={quotation.quotationId}
+                                        >
+                                            <div className="quotation-product-cell">
+                                                <div className="quotation-product-icon selected-product-icon">
+                                                    <CheckCircle size={20} />
+                                                </div>
+                                                <div>
+                                                    <strong>
+                                                        {quotation.productName ||
+                                                            `Product #${quotation.productId}`}
+                                                    </strong>
+                                                    <small>
+                                                        Request #{quotation.productId || 'N/A'}
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <div className="quotation-cell">
+                                                #{quotation.quotationId}
+                                            </div>
+
+                                            <div className="quotation-cell quotation-price">
+                                                ₹
+                                                {Number(
+                                                    quotation.quotedAmount || 0
+                                                ).toLocaleString('en-IN')}
+                                            </div>
+
+                                            <div className="quotation-cell">
+                                                {quotation.availableQuantity ?? 'N/A'}
+                                            </div>
+
+                                            <div className="quotation-cell">
+                                                {quotation.expectedDeliveryDate || 'N/A'}
+                                            </div>
+
+                                            <div>
+                                <span className="quotation-status selected-status">
+                                    <CheckCircle size={14} />
+                                    Selected
+                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* SUBMIT QUOTATION MODAL */}
+                        {selectedRequest && (
+                            <div
+                                className="quotation-modal-overlay"
+                                onClick={() => {
+                                    if (!quotationLoading) {
+                                        setSelectedRequest(null);
+                                        setQuotationMessage('');
+                                    }
+                                }}
+                            >
+                                <div
+                                    className="quotation-modal"
+                                    role="dialog"
+                                    aria-modal="true"
+                                    aria-labelledby="quotation-modal-title"
+                                    onClick={(event) => event.stopPropagation()}
+                                >
+                                    <div className="quotation-modal-header">
+                                        <div>
+                            <span className="quotation-eyebrow">
+                                REQUEST #{selectedRequest.productId}
+                            </span>
+                                            <h3 id="quotation-modal-title">
+                                                Submit Quotation
+                                            </h3>
+                                            <p>
+                                                Enter your price and delivery details.
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            className="quotation-modal-close"
+                                            aria-label="Close quotation form"
+                                            disabled={quotationLoading}
+                                            onClick={() => {
+                                                setSelectedRequest(null);
+                                                setQuotationMessage('');
+                                            }}
+                                        >
+                                            <X size={21} />
+                                        </button>
+                                    </div>
+
+                                    <div className="quotation-request-summary">
+                                        <Package size={23} />
+                                        <div>
+                                            <strong>{selectedRequest.name}</strong>
+                                            <span>
+                                Required quantity:{' '}
+                                                {selectedRequest.numberOfQuantities}
+                            </span>
+                                        </div>
+                                    </div>
+
+                                    <form
+                                        className="quotation-form"
+                                        onSubmit={(event) => {
+                                            event.preventDefault();
+                                            handleSubmitQuotation();
+                                        }}
+                                    >
+                                        <div className="quotation-form-grid">
+                                            <div className="quotation-form-field">
+                                                <label htmlFor="quotedAmount">
+                                                    Quoted Price per Item (₹) *
+                                                </label>
+                                                <input
+                                                    id="quotedAmount"
+                                                    type="number"
+                                                    min="0.01"
+                                                    step="0.01"
+                                                    placeholder="Enter price per item"
+                                                    value={quotedAmount}
+                                                    onChange={(event) =>
+                                                        setQuotedAmount(event.target.value)
+                                                    }
+                                                    required
+                                                />
+                                            </div>
+
+                                            <div className="quotation-form-field">
+                                                <label htmlFor="availableQuantity">
+                                                    Available Quantity *
+                                                </label>
+                                                <input
+                                                    id="availableQuantity"
+                                                    type="number"
+                                                    min={selectedRequest.numberOfQuantities}
+                                                    step="1"
+                                                    placeholder="Enter available quantity"
+                                                    value={availableQuantity}
+                                                    onChange={(event) =>
+                                                        setAvailableQuantity(event.target.value)
+                                                    }
+                                                    required
+                                                />
+                                                <small>
+                                                    Must be at least{' '}
+                                                    {selectedRequest.numberOfQuantities}.
+                                                </small>
+                                            </div>
+
+                                            <div className="quotation-form-field full-width">
+                                                <label htmlFor="expectedDeliveryDate">
+                                                    Expected Delivery Date *
+                                                </label>
+                                                <input
+                                                    id="expectedDeliveryDate"
+                                                    type="date"
+                                                    min={[
+                                                        new Date().getFullYear(),
+                                                        String(new Date().getMonth() + 1)
+                                                            .padStart(2, '0'),
+                                                        String(new Date().getDate())
+                                                            .padStart(2, '0')
+                                                    ].join('-')}
+                                                    value={expectedDeliveryDate}
+                                                    onChange={(event) =>
+                                                        setExpectedDeliveryDate(
+                                                            event.target.value
+                                                        )
+                                                    }
+                                                    required
+                                                />
+                                            </div>
+
+                                            <div className="quotation-form-field full-width">
+                                                <label htmlFor="supplierMessage">
+                                                    Supplier Remarks
+                                                </label>
+                                                <textarea
+                                                    id="supplierMessage"
+                                                    rows={3}
+                                                    maxLength={500}
+                                                    value={supplierMessage}
+                                                    onChange={(event) =>
+                                                        setSupplierMessage(event.target.value)
+                                                    }
+                                                    placeholder="Mention stock, delivery or product details (optional)"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="quotation-form-actions">
+                                            <button
+                                                type="button"
+                                                className="quotation-cancel-btn"
+                                                disabled={quotationLoading}
+                                                onClick={() => {
+                                                    setSelectedRequest(null);
+                                                    setQuotationMessage('');
+                                                }}
+                                            >
+                                                Cancel
+                                            </button>
+
+                                            <button
+                                                type="submit"
+                                                className="quotation-submit-btn modal-submit-btn"
+                                                disabled={quotationLoading}
+                                            >
+                                                {quotationLoading
+                                                    ? 'Submitting...'
+                                                    : 'Submit Quotation'}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
+                    </section>
+                )}
 
                 {/* =================================================
                     KPI CARDS

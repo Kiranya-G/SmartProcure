@@ -58,4 +58,26 @@ public class AccountDetailsService {
                         new RuntimeException(
                                 "Account details not found"));
     }
+
+
+    public AccountDetails resetPin(Long adminId, String newPin) {
+
+        if (newPin == null || !newPin.matches("\\d{4}")) {
+            throw new RuntimeException("PIN must contain exactly 4 digits");
+        }
+
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() ->
+                        new RuntimeException("Admin not found"));
+
+        AccountDetails accountDetails =
+                accountDetailsRepository.findByAdmin(admin)
+                        .orElseThrow(() ->
+                                new RuntimeException("Account details not found"));
+
+        accountDetails.setPin(newPin);
+
+        return accountDetailsRepository.save(accountDetails);
+    }
+
 }

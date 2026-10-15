@@ -10,10 +10,12 @@ body {
 }
 
 .page {
+  width: 100vw;
   min-height: 100vh;
   display: flex;
+  margin: 0;
+  padding: 0;
 }
-
 
 /* =========================================
    LEFT SECTION
@@ -28,6 +30,7 @@ body {
 
   padding: 38px 65px;
 
+  flex-shrink: 0;
   color: white;
 
   background:
@@ -797,9 +800,9 @@ form {
   }
 
   .right-section {
-    min-height: auto;
-
-    padding: 35px 20px;
+    width: 47%;
+    min-height: 100vh;
+    flex-shrink: 0;
   }
 
   .left-footer {
@@ -1354,4 +1357,26 @@ form {
 /* ADMIN icon */
 .icon-role-admin {
   color: #7c3aed;
+}
+
+
+
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100vw;
+  min-height: 100vh;
 }

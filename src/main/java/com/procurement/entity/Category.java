@@ -1,34 +1,35 @@
 package com.procurement.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "category")
 public class Category {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cat_id")
     private Long catId;
 
-    @Column(name = "cat_name", nullable = false)
     @NotBlank(message = "Category name is required")
     @Pattern(
             regexp = "^[A-Za-z ]+$",
             message = "Category name should contain only letters"
     )
+    @Column(name = "cat_name", nullable = false)
     private String catName;
 
-    @ManyToOne
-    @JoinColumn(name = "dep_id", nullable = false)
-    private Department department;
-
-    @ManyToOne
-    @JoinColumn(name = "sup_id", nullable = true)
-    private Supplier supplier;
-
+    // One category can have multiple suppliers.
+    @JsonIgnore
+    @OneToMany(mappedBy = "category")
+    private List<Supplier> suppliers = new ArrayList<>();
 
     public Category() {
     }
@@ -49,19 +50,13 @@ public class Category {
         this.catName = catName;
     }
 
-    public Department getDepartment() {
-        return department;
+    public List<Supplier> getSuppliers() {
+        return suppliers;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
+    public void setSuppliers(List<Supplier> suppliers) {
+        this.suppliers = suppliers;
     }
 
-    public Supplier getSupplier() {
-        return supplier;
-    }
 
-    public void setSupplier(Supplier supplier) {
-        this.supplier = supplier;
-    }
 }

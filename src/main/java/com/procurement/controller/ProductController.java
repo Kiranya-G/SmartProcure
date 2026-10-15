@@ -121,4 +121,13 @@ public class ProductController {
                 productService.getRequestsBySupplier(supplierId)
         );
     }
+
+    @GetMapping("/supplier/{supplierId}/approved-requests")
+    public ResponseEntity<List<Product>> getApprovedRequestsBySupplierCategory(
+            @PathVariable Long supplierId) {
+
+        return ResponseEntity.ok(
+                productService.getApprovedRequestsBySupplierCategory(supplierId)
+        );
+    }
 }

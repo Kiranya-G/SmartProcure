@@ -18,6 +18,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final ProductRepository productRepository;
 
+    private final QuotationRepository quotationRepository;
 
     private final ShipmentService shipmentService;
     private final AdminRepository adminRepository;
@@ -31,23 +32,24 @@ public class PaymentService {
     public PaymentService(
             PaymentRepository paymentRepository,
             ProductRepository productRepository,
-
             AdminRepository adminRepository,
             AccountDetailsRepository accountDetailsRepository,
             NotificationService notificationService,
             OrderService orderService,
-            ShipmentService shipmentService) {
+            ShipmentService shipmentService,
+            QuotationRepository quotationRepository) {
 
         this.paymentRepository = paymentRepository;
         this.productRepository = productRepository;
-
         this.adminRepository = adminRepository;
         this.accountDetailsRepository = accountDetailsRepository;
         this.notificationService = notificationService;
         this.orderService = orderService;
         this.shipmentService = shipmentService;
-
+        this.quotationRepository = quotationRepository;
     }
+
+
 
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
@@ -174,13 +176,26 @@ public class PaymentService {
                         new RuntimeException("Product not found"));
 
         // Check whether supplier is assigned to this request
-        if (product.getSupplier() == null) {
+        // Find the quotation selected by the admin for this request
+        List<Quotation> selectedQuotations =
+                quotationRepository
+                        .findByProduct_ProductIdAndQuotationStatus(
+                                product.getProductId(),
+                                "SELECTED"
+                        );
+
+        if (selectedQuotations.isEmpty()) {
             throw new RuntimeException(
-                    "Supplier is not assigned to this request");
+                    "No supplier quotation has been selected by the admin");
         }
 
-        Supplier supplier = product.getSupplier();
+        if (selectedQuotations.size() > 1) {
+            throw new RuntimeException(
+                    "Multiple suppliers are selected for this request");
+        }
 
+        Quotation selectedQuotation = selectedQuotations.get(0);
+        Supplier supplier = selectedQuotation.getSupplier();
         // Check duplicate payment
         Payment existingPayment =
                 paymentRepository.findByProduct_ProductId(
@@ -212,7 +227,19 @@ public class PaymentService {
                 accountDetails.getIfscCode()
         );
 
-        payment.setAmount(product.getTotalPrice());
+        if (selectedQuotation.getAvailableQuantity()
+                < product.getNumberOfQuantities()) {
+            throw new RuntimeException(
+                    "Selected supplier does not have enough stock");
+        }
+
+        double totalQuotationAmount =
+                selectedQuotation.getQuotedAmount()
+                        * product.getNumberOfQuantities();
+
+        payment.setAmount(totalQuotationAmount);
+
+
 
         String transactionId = "TXN-" +
                 UUID.randomUUID()
@@ -228,6 +255,15 @@ public class PaymentService {
 
         Payment savedPayment =
                 paymentRepository.save(payment);
+
+        selectedQuotation.setPaymentStatus("SUCCESS");
+        quotationRepository.save(selectedQuotation);
+
+        System.out.println("Saved Payment Supplier ID: "
+                + savedPayment.getSupplier().getSupId());
+
+        System.out.println("Saved Payment Status: "
+                + savedPayment.getPaymentStatus());
 
         // Create Order after successful payment
         Order order =

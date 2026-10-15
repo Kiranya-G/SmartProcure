@@ -89,15 +89,13 @@ public class ProductService {
         // 3. GET DEPARTMENT FROM CATEGORY
         // -----------------------------------------------------
 
-        Department department = category.getDepartment();
+        Department department = user.getDepartment();
 
         if (department == null) {
-
             throw new RuntimeException(
-                    "Department not assigned to this category"
+                    "No department assigned to this user"
             );
         }
-
 
         Long departmentId = department.getDepId();
 
@@ -172,15 +170,7 @@ public class ProductService {
 // Temporary: All requests go to Supplier ID 1
 // -----------------------------------------------------
 
-        Supplier supplier =
-                supplierRepository.findById(11L)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Default supplier not found"
-                                )
-                        );
 
-        product.setSupplier(supplier);
 
         product.setPricePerProduct(
                 request.getPricePerProduct()
@@ -294,13 +284,9 @@ public class ProductService {
         );
 
 
-        User departmentAdmin =
-                userRepository
-                        .findByDepartment_DepIdAndDesignation(
-                                departmentId,
-                                "ADMIN"
-                        )
-                        .orElse(null);
+        Admin departmentAdmin =
+                adminRepository.findByDepartment(department);
+
 
 
         // =====================================================
@@ -919,4 +905,25 @@ public class ProductService {
         return productRepository.findBySupplier_SupId(supplierId);
 
     }
+
+
+    public List<Product> getApprovedRequestsBySupplierCategory(Long supplierId) {
+
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() ->
+                        new RuntimeException("Supplier not found")
+                );
+
+        if (!"ACTIVE".equalsIgnoreCase(supplier.getStatus())) {
+            throw new RuntimeException("Supplier is not active");
+        }
+
+        Long categoryId = supplier.getCategory().getCatId();
+
+        return productRepository.findByCategory_CatIdAndStatus(
+                categoryId,
+                "APPROVED"
+        );
+    }
+
 }
